@@ -1,0 +1,1 @@
+<p><?php echo $result; ?></p><br><br><br><a href="/movies/">Все фильмы/сериалы</a>
