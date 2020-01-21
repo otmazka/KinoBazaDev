@@ -61,20 +61,14 @@
 
             </div>
           </div>  
-
-
           <div class="panel panel-info">
             <div class="panel-heading"><div class="sidebar-header">Новости</div></div>
             <div class="panel-body">
-              
               <?php foreach ($news as $key => $value): ?>
                 <p><a href="/news/view/<?php echo $value['slug']; ?>"><?php echo $value['title']; ?></a></p>
               <?php endforeach ?>
-              
             </div>
           </div>
-
-
           <div class="panel panel-info">
             <div class="panel-heading"><div class="sidebar-header">Рейтинг фильмов</div></div>
             <div class="panel-body">
@@ -86,14 +80,8 @@
                       <a href="/movies/view/<?php echo $value['slug']; ?>"><?php echo $value['name']; ?></a>
                     </li>
                   <?php endforeach ?>
-                  
                 </ul>
-
             </div>
           </div>  
-          
-
-
         </div>      
-
       <!-- MENU end -->
