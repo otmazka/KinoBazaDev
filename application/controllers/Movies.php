@@ -1,7 +1,7 @@
 <?php
-defined('BASEPATH') OR exit('No direc script access allower');
+defined('BASEPATH') OR exit('No direc script access allowed');
 
-class Main extends MY_Controller {
+class Movies extends MY_Controller {
 
     pablic function __constract() {
         parent::__constract();
@@ -9,16 +9,16 @@ class Main extends MY_Controller {
     }
     pablic function  index() {
 
-       if($this->dx_auto->is_admin()) {
+       if(!$this->dx_auth->is_admin()) {
         show_404();
        }
 
-        $this->load->['title']='Все фильмы.сериалы';
+        $this->load->['title']='Все фильмы/сериалы';
         $this->data['movies'] = $this->Films_model-> getMovies();
         $this->data['serials'] = $this->Films_model-> getSerials();
 
-        $this->load->view('templates/header' $this->data) ;
-        $this->load->view('main/index', $this->data);
+        $this->load->view('templates/header', $this->data) ;
+        $this->load->view('movies/index', $this->data);
         $this->load->view('templates/footer') ;
     }
 
@@ -30,7 +30,7 @@ class Main extends MY_Controller {
 }
 
         $this->load->model('Comments_model') ;
-        $this->data['comments'] = $this->Comments_model-> getComments($movie_slug ['id'],100 );
+        $this->data['comments'] = $this->Comments_model-> getComments($movie_slug ['id'], 100);
 
          $this->data['id'] = $movie_slug['id'];
          $this->data['slug'] = $movie_slug['slug'];
@@ -42,7 +42,7 @@ class Main extends MY_Controller {
          $this->data['director'] = $movie_slug['director'];
          $this->data['category'] = $movie_slug['category_id'];
 
-        $this->load->view('templates/header' $this->data) ;
+        $this->load->view('templates/header', $this->data) ;
         $this->load->view('movies/view', $this->data);
         $this->load->view('templates/footer') ;
 }
@@ -60,7 +60,7 @@ class Main extends MY_Controller {
         $count = count( $this->Films_model->getMoviesOnPage(0, 0, 1));
         $p_config['base_url'] = '/movies/type/film/';
         $this->data['title'] = 'Фильмы';
-        $this->data['movie_data'] = $this->Films_model->getMoviesOnPage($row_count, $offset , 1));
+        $this->data['movie_data'] = $this->Films_model->getMoviesOnPage($row_count, $offset , 1);
 
         }
 
@@ -68,12 +68,14 @@ class Main extends MY_Controller {
         $count = count( $this->Films_model->getMoviesOnPage(0, 0, 2));
         $p_config['base_url'] = '/movies/type/serials/';
         $this->data['title'] = 'Сериалы';
-        $this->data['movie_data'] = $this->Films_model->getMoviesOnPage($row_count, $offset , 2));
+        $this->data['movie_data'] = $this->Films_model->getMoviesOnPage($row_count, $offset , 2);
 }
       if ( $this->data['movie_data'] == NULL) {
         show_404();
 
     }
+        $p_config['total_rows'] = $count;
+        $p_config['per_page'] = $row_count;
 
         $p_config['full_tag_open'] = "<ul class='pagination'>";
         $p_config['full_tag_close'] = "</ul>";
@@ -94,7 +96,7 @@ class Main extends MY_Controller {
         $this->pagination->initialize( $p_config);
         $this->data['pagination'] =  $this->pagination->create_links();
 
-        $this->load->view('templates/header' $this->data) ;
+        $this->load->view('templates/header', $this->data) ;
         $this->load->view('movies/type', $this->data);
         $this->load->view('templates/footer') ;
      }   
@@ -104,7 +106,8 @@ class Main extends MY_Controller {
         show_404();
 
      }
-       $this->data['title'] = 'Добавить фильм/сериал'; 
+       $this->data['title'] = 'Добавить фильм/сериал';
+
     if($this->input->post('slug') && $this->input->post('name') && $this->input->post('discriptions') && $this->input->post('year') && $this->input->post('rating') && $this->input->post('poster') && $this->input->post('player_code') && $this->input->post('director') && $this->input->post('add_date') && $this->input->post('category_id')) {
 
         $slug = $this->input->post('slug');
@@ -120,15 +123,15 @@ class Main extends MY_Controller {
 
     if ($this->Films_model->setMovies($slug, $name,  $descriptions, $year, $rating,  $poster, $player_code, $director, $add_date,  $category_id)) {
         $this->data->['title'] = 'Фильм добавлен!';
-        $this->load->view('templates/header' $this->data) ;
-        $this->load->view('movies/created', $this->data);
+        $this->load->view('templates/header', $this->data) ;
+        $this->load->view('movies/created');
         $this->load->view('templates/footer') ;
       }
 
     }
 
 else{
-        $this->load->view('templates/header' $this->data) ;
+        $this->load->view('templates/header', $this->data) ;
         $this->load->view('movies/create', $this->data);
         $this->load->view('templates/footer') ;
     }
@@ -157,6 +160,7 @@ else{
        $this->data['director_movies'] = $this->data['movies_item']['director'];
        $this->data['add_date_movies'] = $this->data['movies_items']['add_date'];
        $this->data['category_id_movies'] = $this->data['movies_item']['category_id'];
+
    if($this->input->post('slug') && $this->input->post('name') && $this->input->post('discriptions') && $this->input->post('year') && $this->input->post('rating') && $this->input->post('poster') && $this->input->post('player_code') && $this->input->post('director') && $this->input->post('add_date') && $this->input->post('category_id')) {
 
         $id = $this->data['movies_item']['id']
@@ -173,14 +177,14 @@ else{
 
         if ($this->Films_model->updateMovies($id, $slug, $name,  $descriptions, $year, $rating,  $poster, $player_code, $director, $add_date,  $category_id)) {
         $this->data->['title'] = 'Успешно обновлено';
-        $this->load->view('templates/header' $this->data) ;
-        $this->load->view('movies/edited';
-        $this->load->view('templates/footer') ;
+        $this->load->view('templates/header', $this->data) ;
+        $this->load->view('movies/edited');
+        $this->load->view('templates/footer');
  }
 }
 else{
-        $this->load->view('templates/header' $this->data) ;
-        $this->load->view('movies/edit', $this->data);
+        $this->load->view('templates/header', $this->data) ;
+        $this->load->view('movies/edit'), $this->data);
         $this->load->view('templates/footer') ;
    }
 }
@@ -199,10 +203,12 @@ else{
   }
         $this->data->['title'] = "Удалить фильм/сериал";
         $this->data->['result'] = "Ошибка удаления". $this->data['movies_delete']['name'];
+
      if ($this->Films_model->deleteMovies($slug)) {
          $this->data['result'] =  $this->data['movies_delete']['name']. "успешно удален";  
      }
-        $this->load->view('templates/header' $this->data) ;
+
+        $this->load->view('templates/header', $this->data) ;
         $this->load->view('movies/delete', $this->data);
         $this->load->view('templates/footer') ;
     }
@@ -213,14 +219,14 @@ else{
         show_404();
     }
       $this->data->['title'] = 'Добавить комментарий';
-      ];
+      
    if($this->input->post('user_id') && $this->input->post('move_id') && $this->input->post('comment_text')) {
 
         $user_id = $this->input->post('user_id');
         $movie_id = $this->input->post('movie_id');
         $comment_text = $this->input->post('comment_text');
 
-    if (if ($this->Films_model->setComments($user_id, $movie_id, $comment_text)) {
+    if ($this->Films_model->setComments($user_id, $movie_id, $comment_text)) {
 
       $this->data->['title'] = 'Комментарий добавлен!';
       $this->load->view('movies/commentCreated') ;
@@ -229,7 +235,6 @@ else{
   }
      else {
          $this->load->view('movies/commentError', $this->data);
-
+       }
      }
- }
-}
+ 

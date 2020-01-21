@@ -1,36 +1,40 @@
 <?php
-defined('BASEPATH') OR exit('No direc script access allower');
+defined('BASEPATH') OR exit('No direc script access allowed');
 
 class Main extends MY_Controller {
 
 	pablic function __constract() {
 		parent::__constract();
 	}
+
 	pablic function  index() {
 		$this->data['title'] = 'Главная страница';
 
-
         $this->load->model('Films_model');
-		$this->data['movies'] = $this->Films_model-> getFilms(FALSE, 8, 1);
+		$this->data['movie'] = $this->Films_model-> getFilms(FALSE, 8, 1);
 		$this->data['serials'] = $this->Films_model-> getFilms(FALSE, 8, 2);
 
 	    $this->load->model('Posts_model');
 		$this->data['posts'] = $this->Posts_model-> getPosts(FALSE);
 
 
-	    $this->load->view('templates/header' $this->data) ;
+	    $this->load->view('templates/header', $this->data) ;
 	    $this->load->view('main/index', $this->data);
 	    $this->load->view('templates/footer') ;
 	}
 	pablic function rating() {
 
 		$this->data['title'] = 'Рейтинг фильмов';
-        $this->library('pagination');
+
+        $this->load->library('pagination');
         $offset = (int) $this->uri->segment(2);
         $row_count = 5;
         $count = count( $this->Films_model->getMoviesOnPageByRating(0, 0));
         $p_config['base_url'] = '/rating/';
-        $this->data['movie'] = 	$this->Films_model->getMoviesOnPageByRating( $row_count ,$offset );
+        $this->data['movie'] = 	$this->Films_model->getMoviesOnPageByRating( $row_count ,$offset);
+
+        $p_config['total_rows'] = $count;
+        $p_config['per_page'] = $row_count;
 
         $p_config['full_tag_open'] = "<ul class='pagination'>";
         $p_config['full_tag_close'] = "</ul>";
@@ -51,9 +55,9 @@ class Main extends MY_Controller {
         $this->pagination->initialize( $p_config);
         $this->data['pagination'] =  $this->pagination->create_links();
 
-        $this->load->view('templates/header' $this->data) ;
-	    $this->load->view('main/index', $this->data);
-	    $this->load->view('templates/footer') ;
+        $this->load->view('templates/header', $this->data) ;
+	    $this->load->view('main/rating', $this->data);
+	    $this->load->view('templates/footer');
 	 }   
 
     pablic function contact() {
@@ -64,21 +68,21 @@ class Main extends MY_Controller {
 	    $this->load->library('email') ;
 
 
-	    $this->form_validation->set_rules('name','Ваше имя', 'trim|required');
-	    $this->form_validation->set_rules('email','Ваш email ', 'trim|required_email');
-	    $this->form_validation->set_rules('subject','Тема', 'trim|required');
+	    $this->form_validation->set_rules('name', 'Ваше имя', 'trim|required');
+	    $this->form_validation->set_rules('email', 'Ваш email', 'trim|required|valid_email');
+	    $this->form_validation->set_rules('subject', 'Тема', 'trim|required');
 	    $this->form_validation->set_rules('message','Ваш отзыв', 'trim|required');
 
-    if($this->form_validation->run() == FALSE){
+    if($this->form_validation->run() == FALSE) {
 
-    	$this->load->view('templates/header' $this->data) ;
+    	$this->load->view('templates/header', $this->data) ;
 	    $this->load->view('main/contact', $this->data);
 	    $this->load->view('templates/footer') ;
 
     }
     else {
 
-    	$name = $this->input('name');
+    	$name = $this->input->post('name');
     	$from_email = $this->input->post('email');
         $subject = $this->input->post('subject');
         $message = $this->input->post('message');
@@ -91,15 +95,15 @@ class Main extends MY_Controller {
         $this->email->message($message);
        if ($this->email->send()) {
 
-       	 $this->session->set_flashdata('msg','<div class="alert alert-success">Ваше сообщение успешно отправлено!</div>');
+       	 $this->session->set_flashdata('msg','<div class="alert alert-success text-center">Ваше сообщение успешно отправлено!</div>');
        	 redirect('/contact');
        }
        else {
        	 $this->session->set_flashdata('msg','<div class="alert alert-danger text-center">Произошла ошибка,повторите попытку позже.</div>');
        	 redirect('/contact');
 
+          }
        }
-    }
 
 	}
 }
