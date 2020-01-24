@@ -74,4 +74,51 @@ class Films_model extends CI_Model {
 		->get('movie', $row_count, $offset);
 		return $query->result_array();
 	}
+
+	public function setMovies($slug, $name, $descriptions, $year, $rating, $poster, $player_code, $director, $add_date, $category_id) {
+		$data = array(
+			'slug' => $slug,
+		    'name' => $name,
+		    'descriptions' => $descriptions,
+		    'year' => $year,
+		    'rating' => $rating,
+		    'poster' => $poster,
+		    'player_code' => $player_code,
+		    'director' => $director,
+		    'add_date' => $add_date,
+		    'category_id' => $category_id
+		);
+		return $this->db->insert('movie', $data);
+	}
+
+	public function updateMovies($id, $slug, $name, $descriptions, $year, $rating, $poster, $player_code, $director, $add_date, $category_id) {
+		$data = array(
+			'ic' => $id,
+			'slug' => $slug,
+		    'name' => $name,
+		    'descriptions' => $descriptions,
+		    'year' => $year,
+		    'rating' => $rating,
+		    'poster' => $poster,
+		    'player_code' => $player_code,
+		    'director' => $director,
+		    'add_date' => $add_date,
+		    'category_id' => $category_id
+		);
+		return $this->db->update('movie', $data, array('id' => $id));
+	}
+
+	public function deleteMovies($slug) {
+		return $this->db->delete('movie', array('slug' => $slug));
+	}
+
+	public function setComments($user_id, $movie_id, $comment_text) {
+		$data = array(
+			'user_id' => $user_id,
+			'movie_id' => $movie_id,
+			'comment_text' => $comment_text
+		);
+		return $this->db->insert('comments', $data);
+	}
+	
 }
